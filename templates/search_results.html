@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Результаты поиска</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .search-results {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-item h2 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .result-item p {
+            color: #777;
+            margin-bottom: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Количество строк для отображения */
+            -webkit-box-orient: vertical;
+            white-space: pre-line; /* Добавляем переносы строк */
+        }
+
+        .read-more {
+            color: blue;
+            cursor: pointer;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        .footer a {
+            color: #777;
+            text-decoration: none;
+        }
+    </style>
+    <script>
+        function toggleContent(resultIndex, textIndex) {
+            var content = document.getElementById('content-' + resultIndex + '-' + textIndex);
+            var readMore = document.getElementById('read-more-' + resultIndex + '-' + textIndex);
+
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                content.style.webkitLineClamp = '3';
+                readMore.innerText = 'Читать далее';
+            } else {
+                content.classList.add('expanded');
+                content.style.webkitLineClamp = 'initial';
+                readMore.innerText = 'Свернуть';
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Результаты поиска</h1>
+    <h1>Найдено {{ search_results|length }} песен</h1>
+
+    <div class="search-results">
+        {% set result_index = 0 %}
+        {% for result in search_results %}
+        <div class="result-item">
+            <h2>{{ result.song_name }}</h2>
+            <h2>{{ result.artist }}</h2>
+            <h2>{{ result.search_score }}</h2>
+            <a class="similar-songs-button" href="/similar-songs?song_id={{ result.song_id }}">Найти похожие песни</a>
+            <p id="content-{{ result_index }}-{{ loop.index }}">{{ result.song_txt }}</p>
+            {% if result.song_txt|length > 150 %}
+                <span class="read-more" id="read-more-{{ result_index }}-{{ loop.index }}" onclick="toggleContent({{ result_index }}, {{ loop.index }})">Читать далее</span>
+            {% endif %}
+        </div>
+        {% set result_index = result_index + 1 %}
+        {% endfor %}
+    </div>
+
+    <div class="footer">
+        Powered by <a href="https://www.elastic.co/" target="_blank">ElasticSearch</a>
+    </div>
+
+    <script>
+        var paragraphs = document.querySelectorAll('.result-item p');
+        for (var i = 0; i < paragraphs.length; i++) {
+            var paragraph = paragraphs[i];
+            var content = paragraph.innerHTML;
+            var lines = content.split('\n');
+            var updatedContent = lines.join('<br>');
+            paragraph.innerHTML = updatedContent;
+        }
+    </script>
+</body>
+</html>
