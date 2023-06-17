@@ -32,10 +32,7 @@ def submit_form(request: Request, name: str = Form(None), artist: str = Form(Non
 
 @app.get("/similar-songs")
 async def get_similar_songs(request: Request, song_id: int):
-    # Здесь вы можете получить переданные параметры и выполнить нужные вам действия
-    # Например, можно использовать song_name и artist для поиска похожих песен
     search_song = [{"match": {"song_id": song_id}}]
-    # Вывод полученных параметров в консоль
     song = search(search_song)
     search_ids = song[0]["top_similar"]
     most_similar = search(search_ids, query_type="ids")
