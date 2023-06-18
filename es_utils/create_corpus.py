@@ -11,7 +11,7 @@ def create_index(mapping: dict, index_name: str) -> None:
 
 
 def insert_data(file_path: str, index_name: str) -> None:
-    df = pd.read_csv(file_path).fillna("")
+    df = pd.read_json(file_path).fillna("")
     for _, row in df.iterrows():
         doc = row.to_dict()
         es.index(index=index_name, body=doc)  
@@ -20,7 +20,7 @@ def insert_data(file_path: str, index_name: str) -> None:
 if __name__ == "__main__":
 
     index_name = "song_txt_corpus"
-    file_path = "../data/corpus.csv"
+    file_path = "../data/corpus.json"
 
     mapping = {
         "properties": {
